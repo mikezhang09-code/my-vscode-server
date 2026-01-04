@@ -1,0 +1,37 @@
+version: '3.8'
+
+services:
+  code-server:
+    build: .
+    container_name: vscode-server
+    ports:
+      - "8080:8080"
+    volumes:
+      # Persist workspace data
+      - ./workspace:/home/coder/workspace
+      # Persist code-server config
+      - ./config:/home/coder/.config/code-server
+      # Persist VS Code settings
+      - ./vscode-data:/home/coder/.local/share/code-server
+      # Mount Docker socket for Docker-in-Docker
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      # Set password (change this!)
+      - PASSWORD=${CODE_SERVER_PASSWORD:-changeme}
+      # Optional: Set sudo password
+      - SUDO_PASSWORD=${SUDO_PASSWORD:-changeme}
+      # AI API Keys (configure these in .env file)
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY:-}
+      - GOOGLE_API_KEY=${GOOGLE_API_KEY:-}
+      - GEMINI_API_KEY=${GEMINI_API_KEY:-}
+    restart: unless-stopped
+    # Uncomment to run with host network for Tailscale
+    # network_mode: host
+    # If using host network, comment out the ports section
+    privileged: true
+    cap_add:
+      - NET_ADMIN
+      - SYS_MODULE
+    devices:
+      - /dev/net/tun:/dev/net/tun

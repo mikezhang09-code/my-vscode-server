@@ -1,0 +1,26 @@
+# Environment variables
+.env
+
+# Workspace data
+workspace/
+vscode-data/
+
+# Config with sensitive data (keep config.yaml template but not actual config)
+config/config.yaml
+
+# Docker volumes
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Temporary files
+*.swp
+*.swo
+*~
+.tmp/
