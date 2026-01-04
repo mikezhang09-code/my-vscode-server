@@ -24,11 +24,11 @@ fi
 
 # Build and start the container
 echo "Building Docker image..."
-docker-compose build
+docker compose build
 
 echo ""
 echo "Starting container..."
-docker-compose up -d
+docker compose up -d
 
 echo ""
 echo "================================================"
@@ -41,4 +41,4 @@ echo ""
 
 # Show container logs
 echo "Container logs (Ctrl+C to exit log view):"
-docker-compose logs -f
+docker compose logs -f

@@ -46,7 +46,7 @@ echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docke
 
 # Install Docker
 sudo apt-get update
-sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin
+sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker compose-plugin
 
 # Add user to docker group
 sudo usermod -aG docker $USER
@@ -98,8 +98,8 @@ CODE_SERVER_PASSWORD=YourSecurePasswordHere123!
 ./quick-start.sh
 
 # Or manually
-docker-compose build
-docker-compose up -d
+docker compose build
+docker compose up -d
 ```
 
 ### Step 5: Access Your Server
@@ -138,7 +138,7 @@ TAILSCALE_AUTH_KEY=tskey-auth-xxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 
 ### Step 4: Enable Host Network Mode
 
-Edit `docker-compose.yml`:
+Edit `docker compose.yml`:
 
 ```yaml
 services:
@@ -153,14 +153,14 @@ services:
 ### Step 5: Restart the Container
 
 ```bash
-docker-compose down
-docker-compose up -d
+docker compose down
+docker compose up -d
 ```
 
 ### Step 6: Get Your Tailscale IP
 
 ```bash
-docker-compose exec code-server tailscale ip -4
+docker compose exec code-server tailscale ip -4
 ```
 
 You'll get an IP like: `100.x.x.x`
@@ -192,7 +192,7 @@ OPENAI_API_KEY=sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 #### Step 3: Setup CLI
 ```bash
 # Access the container
-docker-compose exec code-server bash
+docker compose exec code-server bash
 
 # Run setup (happens automatically on first start, but you can run it manually)
 bash /opt/ai-tools/setup-scripts/setup-chatgpt-cli.sh
@@ -230,7 +230,7 @@ ANTHROPIC_API_KEY=sk-ant-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 
 #### Step 3: Setup CLI
 ```bash
-docker-compose exec code-server bash
+docker compose exec code-server bash
 bash /opt/ai-tools/setup-scripts/setup-claude-cli.sh
 claude-cli "Hello!"
 ```
@@ -266,7 +266,7 @@ GEMINI_API_KEY=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 
 #### Step 3: Setup CLI
 ```bash
-docker-compose exec code-server bash
+docker compose exec code-server bash
 bash /opt/ai-tools/setup-scripts/setup-gemini-cli.sh
 gemini-cli "Hello!"
 ```
@@ -406,7 +406,7 @@ volumes:
 
 ### Resource Limits
 
-Add resource limits in `docker-compose.yml`:
+Add resource limits in `docker compose.yml`:
 
 ```yaml
 services:
@@ -428,7 +428,7 @@ services:
 
 Perfect for laptop/desktop use:
 ```bash
-docker-compose up -d
+docker compose up -d
 # Access at http://localhost:8080
 ```
 
@@ -451,7 +451,7 @@ cp .env.example .env
 nano .env  # Configure your settings
 
 # Start the server
-docker-compose up -d
+docker compose up -d
 
 # Set up Tailscale for secure access (recommended)
 # Or use a reverse proxy with HTTPS (nginx, Caddy)
@@ -490,22 +490,22 @@ server {
 
 ```bash
 # Check logs
-docker-compose logs
+docker compose logs
 
 # Check if port is in use
 sudo lsof -i :8080
 
 # Try rebuilding
-docker-compose down
-docker-compose build --no-cache
-docker-compose up -d
+docker compose down
+docker compose build --no-cache
+docker compose up -d
 ```
 
 ### Cannot Access from Browser
 
 1. Check if container is running:
    ```bash
-   docker-compose ps
+   docker compose ps
    ```
 
 2. Check firewall:
@@ -527,7 +527,7 @@ docker-compose up -d
 
 ```bash
 # Enter container
-docker-compose exec code-server bash
+docker compose exec code-server bash
 
 # Check if API keys are set
 env | grep API_KEY
@@ -545,7 +545,7 @@ gemini-cli "test"
 
 ```bash
 # Enter container
-docker-compose exec code-server bash
+docker compose exec code-server bash
 
 # Manually install extension
 code-server --install-extension <extension-id>
@@ -561,23 +561,23 @@ code-server --list-extensions
 3. Disable unused extensions
 4. Clear workspace cache:
    ```bash
-   docker-compose exec code-server rm -rf /home/coder/.local/share/code-server/CachedData
+   docker compose exec code-server rm -rf /home/coder/.local/share/code-server/CachedData
    ```
 
 ### Tailscale Not Connecting
 
 ```bash
 # Check Tailscale status
-docker-compose exec code-server tailscale status
+docker compose exec code-server tailscale status
 
 # Check if tailscaled is running
-docker-compose exec code-server pgrep tailscaled
+docker compose exec code-server pgrep tailscaled
 
 # Restart Tailscale
-docker-compose restart
+docker compose restart
 
 # Check logs
-docker-compose logs | grep tailscale
+docker compose logs | grep tailscale
 ```
 
 ## Best Practices

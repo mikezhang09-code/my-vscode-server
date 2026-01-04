@@ -54,7 +54,8 @@ A complete development environment setup with code-server (VS Code in the browse
    
    Or manually:
    ```bash
-   docker-compose up -d
+   docker compose up -d
+   # Note: Older Docker versions may require: docker-compose up -d
    ```
 
 4. **Access your code-server**:
@@ -226,28 +227,29 @@ my-vscode-server/
 
 ### Starting the Server
 ```bash
-docker-compose up -d
+docker compose up -d
+# Note: Older Docker versions may require: docker-compose up -d
 ```
 
 ### Stopping the Server
 ```bash
-docker-compose down
+docker compose down
 ```
 
 ### Viewing Logs
 ```bash
-docker-compose logs -f
+docker compose logs -f
 ```
 
 ### Accessing the Container Shell
 ```bash
-docker-compose exec code-server bash
+docker compose exec code-server bash
 ```
 
 ### Rebuilding After Changes
 ```bash
-docker-compose build --no-cache
-docker-compose up -d
+docker compose build --no-cache
+docker compose up -d
 ```
 
 ## AI CLI Tools Usage
@@ -304,21 +306,21 @@ Edit `config/settings.json` to customize VS Code settings. Changes will be appli
 
 ### Cannot access code-server
 
-- Check if the container is running: `docker-compose ps`
-- Check logs: `docker-compose logs code-server`
+- Check if the container is running: `docker compose ps`
+- Check logs: `docker compose logs code-server`
 - Verify port 8080 is not in use: `sudo lsof -i :8080`
 
 ### Tailscale not connecting
 
 - Verify your auth key is valid
 - Check if the container has network privileges: `privileged: true` and proper `cap_add` in docker-compose.yml
-- Check Tailscale logs: `docker-compose exec code-server tailscale status`
+- Check Tailscale logs: `docker compose exec code-server tailscale status`
 
 ### AI CLI tools not working
 
 - Verify API keys are set in `.env`
-- Check if environment variables are loaded: `docker-compose exec code-server env | grep API_KEY`
-- Re-run setup: `docker-compose exec code-server bash /opt/ai-tools/setup-scripts/setup-all.sh`
+- Check if environment variables are loaded: `docker compose exec code-server env | grep API_KEY`
+- Re-run setup: `docker compose exec code-server bash /opt/ai-tools/setup-scripts/setup-all.sh`
 
 ### Permission issues
 
