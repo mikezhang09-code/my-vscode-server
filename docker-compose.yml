@@ -8,13 +8,320 @@ services:
       - "3000-3010:3000-3010"
       - "8081-8090:8081-8090"
       - "5173:5173"
+      - "1455:1455"  # Codex OAuth 回调端口 (ChatGPT/OpenAI Codex 插件认证必需)
     environment:
-      - PASSWORD=mike1969@ # CHANGE THIS PASSWORD
+      - PASSWORD=${CODE_SERVER_PASSWORD:-password} # 从环境变量读取，默认为 'password'
       - BROWSER=none # Prevent tools from trying to open a GUI browser
-      - 'EXTENSIONS_GALLERY={"serviceUrl": "https://marketplace.visualstudio.com/_apis/public/gallery", "cacheUrl": "https://vscode.blob.core.windows.net/gallery/index", "itemUrl": "https://marketplace.visualstudio.com/items", "controlUrl": "", "recommendationsUrl": ""}'
+      - 'EXTENSIONS_GALLERY={"serviceUrl": "https://marketplace.visualstudio.com/_apis/public/gallery", "cacheUrl": "https://vscode.blob.core.windows.net/gallery/index", "itemUrl": "https://marketplace.visualstudio.com/items"}'
+      # 可选:  如果使用 API Key 认证方式 (方案 D)
+      # - OPENAI_API_KEY=${OPENAI_API_KEY:-}
     volumes:
       - ./data:/home/coder/project
       - ./config:/home/coder/.config
       - ./config/gemini:/home/coder/.gemini
       - ./config/claude:/home/coder/.claude
       - ./config/npm:/home/coder/.npm
+      - ./config/codex:/home/coder/.codex  # Codex 认证文件存储目录
+
+# ============================================================
+# 密码配置说明 🔐
+# ============================================================
+#
+# 配置:  PASSWORD=${CODE_SERVER_PASSWORD:-password}
+#   - 从环境变量 CODE_SERVER_PASSWORD 读取密码
+#   - 如果环境变量未设置，默认使用 'password'
+#   - 语法: ${变量名:-默认值}
+#
+# ============================================================
+# 方式 1: 本地开发 - 使用 .env 文件 (推荐) 💻
+# ============================================================
+#
+# 步骤:
+#   1. 在项目根目录创建 .env 文件: 
+#      echo "CODE_SERVER_PASSWORD=your_secure_password" > .env
+#   
+#   2. 确保 .env 文件在 .gitignore 中 (不要提交到 Git):
+#      echo ".env" >> .gitignore
+#   
+#   3. 启动服务: 
+#      docker-compose up -d
+#
+# . env 文件示例: 
+#   CODE_SERVER_PASSWORD=my_super_secure_password_123
+#
+# 优点:
+#   - 简单快速，适合本地开发
+#   - 密码不会暴露在配置文件中
+#   - 不会被提交到 Git
+#
+# ============================================================
+# 方式 2: GitHub Secrets (用于 GitHub Actions) 🔄
+# ============================================================
+#
+# ⚠️ 重要:  GitHub Secrets 主要用于 GitHub Actions workflows，
+#          不能直接在本地 docker-compose 中使用。
+#
+# 设置 GitHub Secret:
+#   1. 进入仓库:  https://github.com/mikezhang09-code/my-vscode-server
+#   2. 点击 Settings (设置)
+#   3. 左侧菜单:  Secrets and variables → Actions
+#   4. 点击 "New repository secret"
+#   5. Name: CODE_SERVER_PASSWORD
+#   6. Value: 你的密码
+#   7. 点击 "Add secret"
+#
+# 在 GitHub Actions workflow 中使用:
+#   创建 .github/workflows/deploy.yml:
+#
+#   name: Deploy Code Server
+#   on:
+#     push: 
+#       branches: [ main ]
+#   jobs:
+#     deploy:
+#       runs-on: ubuntu-latest
+#       steps:
+#         - uses: actions/checkout@v3
+#         - name: Deploy
+#           env:
+#             CODE_SERVER_PASSWORD: ${{ secrets.CODE_SERVER_PASSWORD }}
+#           run: docker-compose up -d
+#
+# 优点:
+#   - 适合 CI/CD 自动部署
+#   - GitHub 会安全加密存储
+#   - 日志中不会显示密码明文
+#
+# 注意: 
+#   - 本地开发仍需使用 .env 文件
+#   - GitHub Secrets 只在 GitHub Actions 运行时可用
+#
+# ============================================================
+# 方式 3: 命令行直接指定 ⌨️
+# ============================================================
+#
+# 在运行 docker-compose 时直接指定环境变量:
+#   CODE_SERVER_PASSWORD=mypassword docker-compose up -d
+#
+# 或者先导出环境变量: 
+#   export CODE_SERVER_PASSWORD=mypassword
+#   docker-compose up -d
+#
+# 优点: 
+#   - 快速测试
+#   - 适合临时使用
+# 缺点:
+#   - 每次启动都需要重新指定
+#   - 密码可能会保留在 shell 历史记录中
+#
+# ============================================================
+# 方式 4: 远程服务器部署 🖥️
+# ============================================================
+#
+# SSH 到服务器后设置环境变量:
+#   ssh user@your-server
+#   cd /path/to/my-vscode-server
+#   
+#   # 方法 1: 创建 .env 文件
+#   echo "CODE_SERVER_PASSWORD=server_password" > .env
+#   docker-compose up -d
+#   
+#   # 方法 2: 导出环境变量
+#   export CODE_SERVER_PASSWORD=server_password
+#   docker-compose up -d
+#   
+#   # 方法 3: 添加到服务器的 ~/.bashrc 或 ~/. profile
+#   echo 'export CODE_SERVER_PASSWORD=server_password' >> ~/.bashrc
+#   source ~/.bashrc
+#   docker-compose up -d
+#
+# ============================================================
+# 方式 5: 使用默认密码 (不推荐) ⚠️
+# ============================================================
+#
+# 如果不设置任何环境变量，直接运行: 
+#   docker-compose up -d
+#
+# 将使用默认密码:  'password'
+#
+# ⚠️ 警告: 
+#   - 默认密码不安全，仅用于测试
+#   - 生产环境必须设置强密码
+#
+# ============================================================
+# 安全建议 🛡️
+# ============================================================
+#
+# 1. ✅ 使用强密码 (至少 12 位，包含大小写字母、数字、特殊字符)
+# 2. ✅ 确保 .env 文件在 .gitignore 中
+# 3. ✅ 不要在代码中硬编码密码
+# 4. ✅ 定期更换密码
+# 5. ✅ 生产环境考虑使用 HTTPS + 反向代理
+# 6. ⚠️ 不要在公共网络上使用默认密码
+#
+# . gitignore 必须包含:
+#   . env
+#   data/
+#   config/
+#
+# ============================================================
+# 验证配置 ✓
+# ============================================================
+#
+# 1. 检查环境变量是否正确读取: 
+#    docker-compose config
+#
+# 2. 查看容器实际使用的环境变量:
+#    docker exec my-code-server env | grep PASSWORD
+#
+# 3. 测试登录:
+#    访问 http://localhost:8080
+#    使用你设置的密码登录
+#
+# ============================================================
+
+# ============================================================
+# Codex/ChatGPT 插件 OAuth 认证问题解决方案备注
+# ============================================================
+# 
+# 问题: 在 Docker 容器中使用 ChatGPT Codex 插件时，OAuth 认证
+#       回调到 localhost: 1455，但这个 localhost 指向容器内部而非
+#       主机，导致浏览器无法访问回调 URL，认证失败。
+#
+# ============================================================
+# 方案 A: 端口映射 (当前使用) ✅
+# ============================================================
+# 将容器的 1455 端口映射到主机的 1455 端口
+# 配置: ports: "1455:1455"
+# 
+# 优点:
+#   - 简单直接，无需额外操作
+#   - 适合本地 Docker 环境
+# 缺点:
+#   - 需要确保主机 1455 端口未被占用
+#   - 如果插件使用其他端口需要额外映射
+#
+# 使用步骤:
+#   1. 确保端口已映射 (ports: "1455:1455")
+#   2. 重启容器:  docker-compose down && docker-compose up -d
+#   3. 在 code-server 中启动 Codex 认证
+#   4. 浏览器完成 OAuth 认证后会正确回调
+#
+# ============================================================
+# 方案 B: 复制认证文件 (推荐作为备用) 🔄
+# ============================================================
+# 在主机上完成认证后，将认证文件复制到容器
+# 配置: volumes: ./config/codex:/home/coder/.codex
+#
+# 优点:
+#   - 最可靠，绕过 OAuth 回调问题
+#   - 认证文件可复用
+#   - 适合团队共享认证
+# 缺点: 
+#   - 需要先在其他地方完成认证
+#   - Token 过期需要重新复制
+#
+# 使用步骤:
+#   方法 1 - 手动复制: 
+#     1. 在本地 VS Code 中完成 Codex 认证
+#     2. 找到认证文件 (通常在 ~/.codex/auth.json)
+#     3. 复制到主机:  cp ~/.codex/auth.json ./config/codex/
+#     4. 重启容器，认证信息自动生效
+#   
+#   方法 2 - Docker cp:
+#     1. 在其他环境完成认证
+#     2. docker cp ~/. codex/auth.json my-code-server:/home/coder/.codex/
+#     3. 重启 code-server 或重新加载插件
+#
+# ============================================================
+# 方案 C: SSH 端口转发 (远程服务器场景) 🌐
+# ============================================================
+# 通过 SSH 隧道将远程容器的端口转发到本地
+#
+# 优点:
+#   - 适合远程服务器部署
+#   - 不需要修改防火墙规则
+#   - 安全性高
+# 缺点: 
+#   - 每次认证都需要建立 SSH 隧道
+#   - 需要 SSH 访问权限
+#
+# 使用步骤:
+#   1. 建立 SSH 隧道:  ssh -L 1455:localhost:1455 user@remote-server
+#   2. 在 code-server 中启动 Codex 认证
+#   3. 本地浏览器完成认证，通过隧道回调到远程容器
+#   4. 认证完成后可关闭 SSH 隧道
+#
+# ============================================================
+# 方案 D: API Key 认证 (无 OAuth) 🔑
+# ============================================================
+# 使用 OpenAI API Key 代替 OAuth 认证
+# 配置: environment:  OPENAI_API_KEY=your-api-key-here
+#
+# 优点:
+#   - 完全避免 OAuth 回调问题
+#   - 适合 CI/CD 和自动化场景
+#   - 配置简单
+# 缺点:
+#   - 部分插件功能可能受限
+#   - 需要从 OpenAI 控制台获取 API Key
+#   - API Key 需要妥善保管
+#
+# 使用步骤:
+#   1. 访问 https://platform.openai.com/api-keys
+#   2. 生成新的 API Key
+#   3. 在 environment 中添加:  OPENAI_API_KEY=sk-xxx
+#   4. 重启容器，插件会自动使用 API Key
+#
+# ============================================================
+# 方案 E: Host 网络模式 (不推荐) ⚠️
+# ============================================================
+# 让容器直接使用主机网络栈
+# 配置: network_mode: "host" (移除 ports 配置)
+#
+# 优点:
+#   - 彻底解决 localhost 问题
+#   - 无需端口映射
+# 缺点:
+#   - 失去网络隔离，安全性降低
+#   - 端口冲突风险高
+#   - 不适合生产环境
+#
+# 使用步骤:
+#   1. 注释掉所有 ports 配置
+#   2. 添加:  network_mode: "host"
+#   3. 重启容器:  docker-compose down && docker-compose up -d
+#
+# ============================================================
+# 故障排查
+# ============================================================
+# 
+# 1. 查看容器日志: 
+#    docker logs my-code-server
+#
+# 2. 检查端口映射:
+#    docker port my-code-server
+#
+# 3. 进入容器检查:
+#    docker exec -it my-code-server /bin/bash
+#    netstat -tuln | grep 1455
+#
+# 4. 检查认证文件:
+#    docker exec -it my-code-server ls -la /home/coder/.codex/
+#
+# 5. 测试端口连通性:
+#    curl http://localhost:1455
+#
+# 6. 检查密码配置:
+#    docker-compose config | grep PASSWORD
+#    docker exec my-code-server env | grep PASSWORD
+#
+# ============================================================
+# 参考资源
+# ============================================================
+# - GitHub 讨论:  https://github.com/openai/codex/discussions/4650
+# - Docker 中 Codex 认证: https://github.com/ungb/codex-docker
+# - 远程 OAuth 修复: https://michaelbommarito.com/wiki/tools/openai-cli-remote-oauth/
+# - Docker Compose 环境变量: https://docs.docker.com/compose/environment-variables/
+# - GitHub Secrets: https://docs.github.com/en/actions/security-guides/encrypted-secrets
+# ============================================================
