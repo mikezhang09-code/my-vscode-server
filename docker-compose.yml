@@ -1,0 +1,12 @@
+services:
+  dev-server:
+    build: .
+    container_name: my-code-server
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      - PASSWORD=password # CHANGE THIS PASSWORD
+    volumes:
+      - ./data:/home/coder/project
+      - ./config:/home/coder/.config
