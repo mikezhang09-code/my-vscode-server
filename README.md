@@ -62,6 +62,9 @@ A complete development environment setup with code-server (VS Code in the browse
    - Open your browser and navigate to: `http://localhost:8080`
    - Enter the password you configured in `.env`
 
+5. **Verify the setup** (optional but recommended):
+   - See [TESTING.md](TESTING.md) for comprehensive testing instructions
+
 ## Configuration
 
 ### Basic Setup
@@ -211,6 +214,8 @@ my-vscode-server/
 ├── quick-start.sh         # Quick start helper script
 ├── README.md              # This file
 ├── SETUP-GUIDE.md         # Detailed setup guide
+├── TESTING.md             # Testing and verification guide
+├── LICENSE                # MIT License
 ├── config/                # Code-server configuration
 │   ├── config.yaml        # Code-server settings (generated)
 │   └── settings.json      # VS Code settings
@@ -357,6 +362,7 @@ MIT License - feel free to use this for your own projects!
 For issues and questions:
 - Open an issue on GitHub
 - Check the [SETUP-GUIDE.md](SETUP-GUIDE.md) for detailed instructions
+- Review [TESTING.md](TESTING.md) for verification and troubleshooting
 
 ## Acknowledgments
 
