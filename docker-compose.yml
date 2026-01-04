@@ -8,6 +8,7 @@ services:
       - "3000-3010:3000-3010"
       - "8081-8090:8081-8090"
       - "5173:5173"
+      - "1445:1445"
       - "1455:1455"  # Codex OAuth 回调端口 (ChatGPT/OpenAI Codex 插件认证必需)
     environment:
       - PASSWORD=${CODE_SERVER_PASSWORD:-password} # 从环境变量读取，默认为 'password'
