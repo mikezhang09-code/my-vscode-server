@@ -17,9 +17,11 @@ if [ ! -f .env ]; then
     read
 fi
 
-# Load environment variables
+# Load environment variables safely
 if [ -f .env ]; then
-    export $(cat .env | grep -v '^#' | xargs)
+    set -o allexport
+    source .env
+    set +o allexport
 fi
 
 # Build and start the container
