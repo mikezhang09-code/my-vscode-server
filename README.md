@@ -9,7 +9,16 @@ Pre-configured with **Node.js 20**, **Python**, **Claude Code**, and **Gemini CL
 
 ## Quick Start
 
-1.  **Build the Environment**:
+1.  **Prepare Directories** (Fix permissions):
+    ```bash
+    mkdir -p data config
+    # create config subdirs to persist tool auth
+    mkdir -p config/gemini config/claude config/npm
+    # Set permissions (User 1000 is 'coder' inside container)
+    sudo chown -R 1000:1000 data config
+    ```
+
+2.  **Build the Environment**:
     ```bash
     sudo docker compose build
     ```
@@ -44,9 +53,27 @@ Open the integrated terminal in code-server (Ctrl+`) and run:
 - **Password**: Edit `docker-compose.yml`
 - **Ports**:
     - `8080`: Code-server
-    - `5173`: Vite default (Ensure this is exposed in `docker-compose.yml` or use VS Code port forwarding).
+    - `3000-3010`: Common Dev Servers (React, Next.js)
+    - `5173`: Vite
+    - `8081-8090`: Additional ports
 
 ## Management
 - **Stop Server**: `sudo docker compose down`
 - **View Logs**: `sudo docker compose logs -f`
 - **Shell Access**: `sudo docker compose exec dev-server bash`
+
+## Troubleshooting
+
+### 1. "npm run dev" opens localhost:8081 (Browser Issue)
+- **Fix**: We've set `BROWSER=none` in `docker-compose.yml`. This prevents the container from trying to open a GUI browser.
+- **Access**: Use the forwarded ports. For `8081`, go to `http://<tailscale-ip>:8081`.
+
+### 2. Authorization (Localhost callback failed)
+- **Context**: Since the browser is on your VPS (or client) and the container is remote, `localhost` callbacks won't reach the container.
+- **Fix**: When authenticating (e.g. `gh auth login`, `wrangler login`), choose **"Paste an authentication token"** or **"Device Code"** flow if available.
+- **Note**: `BROWSER=none` usually forces these tools to offer a copy-paste link.
+
+### 3. GitHub Copilot Configuration
+- **Issue**: Copilot is not enabled by default in open-source `code-server`.
+- **Fix**: We have configured `EXTENSIONS_GALLERY` to point to the Microsoft Marketplace in `docker-compose.yml`.
+- **Action**: Restart the server (`make down && make up`), then search for "GitHub Copilot" in the Extensions view and install it normally.

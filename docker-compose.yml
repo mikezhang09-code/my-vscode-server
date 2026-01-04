@@ -5,8 +5,16 @@ services:
     restart: unless-stopped
     ports:
       - "8080:8080"
+      - "3000-3010:3000-3010"
+      - "8081-8090:8081-8090"
+      - "5173:5173"
     environment:
-      - PASSWORD=password # CHANGE THIS PASSWORD
+      - PASSWORD=mike1969@ # CHANGE THIS PASSWORD
+      - BROWSER=none # Prevent tools from trying to open a GUI browser
+      - 'EXTENSIONS_GALLERY={"serviceUrl": "https://marketplace.visualstudio.com/_apis/public/gallery", "cacheUrl": "https://vscode.blob.core.windows.net/gallery/index", "itemUrl": "https://marketplace.visualstudio.com/items", "controlUrl": "", "recommendationsUrl": ""}'
     volumes:
       - ./data:/home/coder/project
       - ./config:/home/coder/.config
+      - ./config/gemini:/home/coder/.gemini
+      - ./config/claude:/home/coder/.claude
+      - ./config/npm:/home/coder/.npm
