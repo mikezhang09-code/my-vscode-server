@@ -9,20 +9,21 @@ services:
       - "8081-8090:8081-8090"
       - "5173:5173"
       - "1445:1445"
-      - "1455:1455"  # Codex OAuth 回调端口 (ChatGPT/OpenAI Codex 插件认证必需)
+      - "1455:1455" # Codex OAuth 回调端口 (ChatGPT/OpenAI Codex 插件认证必需)
     environment:
       - PASSWORD=${CODE_SERVER_PASSWORD:-password} # 从环境变量读取，默认为 'password'
       - BROWSER=none # Prevent tools from trying to open a GUI browser
       - 'EXTENSIONS_GALLERY={"serviceUrl": "https://marketplace.visualstudio.com/_apis/public/gallery", "cacheUrl": "https://vscode.blob.core.windows.net/gallery/index", "itemUrl": "https://marketplace.visualstudio.com/items"}'
       # 可选:  如果使用 API Key 认证方式 (方案 D)
       # - OPENAI_API_KEY=${OPENAI_API_KEY:-}
+    command: --bind-addr 0.0.0.0:8080 --auth password
     volumes:
       - ./data:/home/coder/project
       - ./config:/home/coder/.config
       - ./config/gemini:/home/coder/.gemini
       - ./config/claude:/home/coder/.claude
       - ./config/npm:/home/coder/.npm
-      - ./config/codex:/home/coder/.codex  # Codex 认证文件存储目录
+      - ./config/codex:/home/coder/.codex # Codex 认证文件存储目录
 
 # ============================================================
 # 密码配置说明 🔐
@@ -184,7 +185,7 @@ services:
 # ============================================================
 # Codex/ChatGPT 插件 OAuth 认证问题解决方案备注
 # ============================================================
-# 
+#
 # 问题: 在 Docker 容器中使用 ChatGPT Codex 插件时，OAuth 认证
 #       回调到 localhost: 1455，但这个 localhost 指向容器内部而非
 #       主机，导致浏览器无法访问回调 URL，认证失败。
@@ -194,7 +195,7 @@ services:
 # ============================================================
 # 将容器的 1455 端口映射到主机的 1455 端口
 # 配置: ports: "1455:1455"
-# 
+#
 # 优点:
 #   - 简单直接，无需额外操作
 #   - 适合本地 Docker 环境
@@ -296,7 +297,7 @@ services:
 # ============================================================
 # 故障排查
 # ============================================================
-# 
+#
 # 1. 查看容器日志: 
 #    docker logs my-code-server
 #
