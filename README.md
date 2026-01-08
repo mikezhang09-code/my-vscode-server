@@ -29,8 +29,10 @@ Pre-configured with **Node.js 20**, **Python**, **Claude Code**, and **Gemini CL
     ```
 
 3.  **Access**:
-    - URL: `http://<your-tailscale-ip>:8080` (or `http://localhost:8080`)
-    - Password: configured in `docker-compose.yml` (Default: `password`)
+    - **Local Access**: `http://localhost:8080`
+    - **LAN Access**: `http://<your-lan-ip>:8080` (e.g., `http://192.168.1.100:8080`)
+    - **Remote Access (Tailscale)**: `http://<your-tailscale-ip>:8080`
+    - **Password**: configured in `docker-compose.yml` (Default: `password`)
 
 *(Optional: If you have `make` installed, you can use `sudo make build` and `sudo make up`)*
 
