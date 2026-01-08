@@ -52,7 +52,8 @@ Open the integrated terminal in code-server (Ctrl+`) and run:
     *Access at `http://<tailscale-ip>:5173`*
 
 ## Configuration
-- **Password**: Edit `docker-compose.yml`
+- **Password**: Edit `.env` or `docker-compose.yml`
+- **User Permissions**: Set `UID` and `GID` in `.env` to match your host user (run `id` to check) to avoid permission issues.
 - **Modules**: `http://<tailscale-ip>:8081` (and other forwarded ports)
 - **Workspace**: Maps the **parent directory** (`../`) to `/home/coder/project`.
 - **Ports**:
