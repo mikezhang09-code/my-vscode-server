@@ -18,7 +18,7 @@ services:
       # - OPENAI_API_KEY=${OPENAI_API_KEY:-}
     command: --bind-addr 0.0.0.0:8080 --auth password
     volumes:
-      - ./data:/home/coder/project
+      - ../:/home/coder/project
       - ./config:/home/coder/.config
       - ./config/gemini:/home/coder/.gemini
       - ./config/claude:/home/coder/.claude

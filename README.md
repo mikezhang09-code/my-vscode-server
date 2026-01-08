@@ -11,11 +11,11 @@ Pre-configured with **Node.js 20**, **Python**, **Claude Code**, and **Gemini CL
 
 1.  **Prepare Directories** (Fix permissions):
     ```bash
-    mkdir -p data config
+    mkdir -p config
     # create config subdirs to persist tool auth
     mkdir -p config/gemini config/claude config/npm
     # Set permissions (User 1000 is 'coder' inside container)
-    sudo chown -R 1000:1000 data config
+    sudo chown -R 1000:1000 config
     ```
 
 2.  **Build the Environment**:
@@ -53,6 +53,8 @@ Open the integrated terminal in code-server (Ctrl+`) and run:
 
 ## Configuration
 - **Password**: Edit `docker-compose.yml`
+- **Modules**: `http://<tailscale-ip>:8081` (and other forwarded ports)
+- **Workspace**: Maps the **parent directory** (`../`) to `/home/coder/project`.
 - **Ports**:
     - `8080`: Code-server
     - `3000-3010`: Common Dev Servers (React, Next.js)
